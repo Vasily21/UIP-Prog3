@@ -1,1 +1,15 @@
+#Quiz 1
+#VasilyCastillo
 
+print ("\nRealizar la suma de todos los numeros pares entre 10 y 5000 sin contemplar a 100 y 1000.\n")
+a = 8
+b = 0
+
+while a < 5001:
+    if a == 100 or a == 1000:
+        pass
+
+    a += 2
+    b = b + a
+
+print("El número del resultado es: ",b)
