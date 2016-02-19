@@ -3,7 +3,7 @@
 * *Autor*: Vasily Castillo
 * *Versión*: 1.0
 
-Incluye una descripción.
+Organizacion de los trabajos y laboratorios del curso.
 
 ## Licencia
 MIT License
