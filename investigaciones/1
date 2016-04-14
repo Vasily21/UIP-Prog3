@@ -1,1 +1,13 @@
+Investigación 1 
+
+Python es un lenguaje de programación libre y multiplataforma, implementado en todos los sistemas operativos de uso general. Es un lenguaje poderoso y de alto nivel, que permite procesar fácilmente todo tipo de estructuras de datos, tanto numéricos como de texto. Siendo un lenguaje ampliamente utilizado, cuenta con una vasta biblioteca de módulos que extienden sus funcionalidades en ámbitos tan variados como la computación científica, el diseño de interfaces gráficas, el procesamiento de imágenes y de audio, y de representación simbólica de estructuras musicales. También se integra fácilmente con Csound.
+Existen diversas implementaciones del lenguaje:
+
+•	CPython es la implementación original, disponible para varias plataformas en el sitio oficial de Python.
+•	IronPython es la implementación para .NET
+•	Stackless Python es la variante de CPython que trata de no usar el stack de C 
+•	Jython es la implementación hecha en Java
+•	Pippy es la implementación realizada para Palm
+•	PyPy es una implementación de Python escrita en Python y optimizada mediante JIT 
+•	ActivePython es una implementación privativa de Python con extensiones, para servidores en producción y aplicaciones de misión crítica desarrollados por ActiveState Software.
 
