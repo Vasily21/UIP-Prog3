@@ -1,0 +1,487 @@
+Design patterns in Python (Patrones de diseños en Python)
+
+•	DP#1 – Model-View-Controller Pattern
+•	DP#2 – Command Pattern
+•	DP#3 – Observer Pattern
+•	DP#4 – Facade Pattern
+•	DP#5 – Mediator Pattern
+•	DP#6 - Factory Pattern
+•	DP#7 - Proxy Pattern 
+
+
+Pre-Requisites
+•	Basic Knowledge of Object-Oriented Programming
+•	Basic Knowledge of Python
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+The Model-View-Controller Pattern 
+Model–View–Controller (MVC) is a software architecture, currently considered an architectural pattern used in software engineering. The pattern isolates “domain logic” (the application logic for the user) from input and presentation (GUI), permitting independent development, testing and maintenance of each.
+In simple words:  Controller associates the user input to a Model and a View  Model fetches the data to be presented from persistent storage.
+# Filename: mvc.py
+import sqlite3
+import types
+class DefectModel:
+ def getDefectList(self, component):
+ query = '''select ID from defects where Component = '%s' ''' %component
+ defectlist = self._dbselect(query)
+ list = []
+ for row in defectlist:
+ list.append(row[0])
+return list
+ def getSummary(self, id):
+ query = '''select summary from defects where ID = '%d' ''' % id
+ summary = self._dbselect(query)
+for row in summary:
+ return row[0]
+ def _dbselect(self, query):
+connection = sqlite3.connect('TMS')
+cursorObj = connection.cursor()
+results = cursorObj.execute(query)
+connection.commit()
+cursorObj.close()
+return results
+class DefectView:
+ def summary(self, summary, defectid):
+ print "#### Defect Summary for defect# %d####\n%s" % (defectid,summary)
+ def defectList(self, list, category):
+ print "#### Defect List for %s ####\n" % category
+ for defect in list:
+ print defect
+class Controller:
+ def __init__(self):
+ pass
+ def getDefectSummary(self, defectid):
+ model = DefectModel()
+ view = DefectView()
+ summary_data = model.getSummary(defectid)
+ return view.summary(summary_data, defectid)
+ def getDefectList(self, component):
+ model = DefectModel()
+ view = DefectView()
+ defectlist_data = model.getDefectList(component)
+ return view.defectList(defectlist_data, component)
+
+
+
+
+
+
+Command Pattern
+In object-oriented programming, the command pattern is a design pattern in which an object is used to represent and encapsulate all the information needed to call a method at a later time. This information includes the method name, the object that owns the method and values for the method parameters.
+
+class Switch:
+ """ The INVOKER class"""
+ def __init__(self, flipUpCmd, flipDownCmd):
+self.__flipUpCommand = flipUpCmd
+self.__flipDownCommand = flipDownCmd
+ def flipUp(self):
+ self.__flipUpCommand.execute()
+ def flipDown(self):
+ self.__flipDownCommand.execute()
+class Light:
+ """The RECEIVER Class"""
+ def turnOn(self):
+print "The light is on"
+ def turnOff(self):
+print "The light is off"
+class Command:
+ """The Command Abstract class"""
+ def __init__(self):
+pass
+#Make changes
+ def execute(self):
+#OVERRIDE
+pass
+class FlipUpCommand(Command):
+ """The Command class for turning on the light"""
+ def __init__(self,light):
+self.__light = light
+ def execute(self):
+self.__light.turnOn()
+class FlipDownCommand(Command):
+ """The Command class for turning off the light"""
+ def __init__(self,light):
+Command.__init__(self)
+self.__light = light
+ def execute(self):
+ self.__light.turnOff()
+class LightSwitch:
+ """ The Client Class"""
+def __init__(self):
+self.__lamp = Light()
+self.__switchUp = FlipUpCommand(self.__lamp)
+self.__switchDown = FlipDownCommand(self.__lamp)
+self.__switch = Switch(self.__switchUp,self.__switchDown)
+ def switch(self,cmd):
+cmd = cmd.strip().upper()
+try:
+ if cmd == "ON":
+ self.__switch.flipUp()
+ elif cmd == "OFF":
+self.__switch.flipDown()
+ else:
+print "Argument \"ON\" or \"OFF\" is required."
+except Exception, msg:
+ print "Exception occured: %s" % msg
+# Execute if this file is run as a script and not imported as a module
+if __name__ == "__main__":
+ lightSwitch = LightSwitch()
+ print "Switch ON test."
+ lightSwitch.switch("ON")
+ print "Switch OFF test"
+ lightSwitch.switch("OFF")
+ print "Invalid Command test"
+ lightSwitch.switch("****")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Observer Pattern
+The observer pattern (a subset of the publish/subscribe pattern) is a software design pattern in which an object, called the subject, maintains a list of its dependants, called observers, and notifies them automatically of any state changes, usually by calling one of their methods. It is mainly used to implement distributed event handling systems.
+
+class Publisher:
+ def __init__(self):
+ #MAke it uninheritable
+ pass
+ def register(self):
+ #OVERRIDE
+ pass
+ def unregister(self):
+ #OVERRIDE
+ pass
+ def notifyAll(self):
+ #OVERRIDE
+ pass
+class TechForum(Publisher):
+ def __init__(self):
+ self._listOfUsers = []
+ self.postname = None
+def register(self, userObj):
+ if userObj not in self._listOfUsers:
+ self._listOfUsers.append(userObj)
+ def unregister(self, userObj):
+ self._listOfUsers.remove(userObj)
+ def notifyAll(self):
+ for objects in self._listOfUsers:
+ objects.notify(self.postname)
+ def writeNewPost(self, postname):
+ # User writes a post.
+ self.postname = postname
+ # When submits the post is published and notification is sent to all
+ self.notifyAll()
+class Subscriber:
+ def __init__(self):
+ #make it uninheritable
+ pass
+ def notify(self):
+ #OVERRIDE
+ pass
+class User1(Subscriber):
+ def notify(self,postname):
+ print 'User1 notfied of a new post %s' % postname
+class User2(Subscriber):
+ def notify(self, postname):
+ print 'User2 notfied of a new post %s' % postname
+class SisterSites(Subscriber):
+ def __init__(self):
+ self._sisterWebsites = ["Site1","Site2","Site3"]
+ def notify(self, postname):
+ for site in self._sisterWebsites:
+ # Send updates by any means
+ print "Sent nofication to site: %s" % site
+if __name__ == "__main__":
+ techForum = TechForum()
+ user1 = User1()
+ user2 = User2()
+sites = SisterSites()
+ techForum.register(user1)
+ techForum.register(user2)
+ techForum.register(sites)
+ techForum.writeNewPost("Observer Pattern in Python")
+ techForum.unregister(user2)
+ techForum.writeNewPost("MVC Pattern in Python") 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Facade Pattern
+The facade pattern is a software engineering design pattern commonly used with Object-oriented programming. (The name is by analogy to an architectural facade.). A facade is an object that provides a simplified interface to a larger body of code, such as a class library.
+
+#Complex Parts
+import time
+class TC1:
+ def run(self):
+ print "###### In Test 1 ######"
+ time.sleep(1)
+ print "Setting up"
+ time.sleep(1)
+ print "Running test"
+ time.sleep(1)
+ print "Tearing down"
+ time.sleep(1)
+ print "Test Finished\n"
+class TC2:
+ def run(self):
+ print "###### In Test 2 ######"
+ time.sleep(1)
+ print "Setting up"
+ time.sleep(1)
+print "Running test"
+ time.sleep(1)
+ print "Tearing down"
+ time.sleep(1)
+ print "Test Finished\n"
+class TC3:
+ def run(self):
+ print "###### In Test 3 ######"
+ time.sleep(1)
+ print "Setting up"
+ time.sleep(1)
+ print "Running test"
+ time.sleep(1)
+ print "Tearing down"
+ time.sleep(1)
+ print "Test Finished\n"
+#Facade
+class TestRunner:
+ def __init__(self):
+ self.tc1 = TC1()
+ self.tc2 = TC2()
+ self.tc3 = TC3()
+ def runAll(self):
+ self.tc1.run()
+ self.tc2.run()
+ self.tc3.run()
+#Client
+if __name__ == '__main__':
+ testrunner = TestRunner()
+ testrunner.runAll()
+
+
+
+Mediator Pattern
+The mediator pattern provides a unified interface to a set of interfaces in a subsystem. This pattern is considered to be a behavioral pattern due to the way it can alter the program's running behavior.
+
+import time
+class TC:
+def __init__(self):
+self._tm = tm
+self._bProblem = 0
+def setup(self):
+print "Setting up the Test"
+time.sleep(1)
+self._tm.prepareReporting()
+def execute(self):
+if not self._bProblem:
+print "Executing the test"
+time.sleep(1)
+else:
+print "Problem in setup. Test not executed."
+def tearDown(self):
+if not self._bProblem:
+print "Tearing down"
+time.sleep(1)
+self._tm.publishReport()
+else:
+print "Test not executed. No tear down required."
+def setTM(self,TM):
+self._tm = tm
+def setProblem(self, value):
+self._bProblem = value
+class Reporter:
+def __init__(self):
+self._tm = None
+def prepare(self):
+print "Reporter Class is preparing to report the results"
+time.sleep(1)
+def report(self):
+print "Reporting the results of Test"
+time.sleep(1)
+def setTM(self,TM):
+self._tm = tm
+class DB:
+def __init__(self):
+self._tm = None
+def insert(self):
+print "Inserting the execution begin status in the Database"
+time.sleep(1)
+#Following code is to simulate a communication from DB to TC
+import random
+if random.randrange(1,4) == 3:
+return -1
+def update(self):
+print "Updating the test results in Database"
+time.sleep(1)
+def setTM(self,TM):
+self._tm = tm
+class TestManager:
+def __init__(self):
+self._reporter = None
+self._db = None
+self._tc = None
+def prepareReporting(self):
+rvalue = self._db.insert()
+if rvalue == -1:
+self._tc.setProblem(1)
+self._reporter.prepare()
+def setReporter(self, reporter):
+self._reporter = reporter
+def setDB(self, db):
+self._db = db
+def publishReport(self):
+self._db.update()
+rvalue = self._reporter.report()
+def setTC(self,tc):
+self._tc = tc
+if __name__ == '__main__':
+reporter = Reporter()
+db = DB()
+tm = TestManager()
+tm.setReporter(reporter)
+tm.setDB(db)
+reporter.setTM(tm)
+db.setTM(tm)
+# For simplification we are looping on the same test.
+# Practically, it could be about various unique test classes and their objects
+while (1):
+tc = TC()
+tc.setTM(tm)
+tm.setTC(tc)
+tc.setup()
+tc.execute()
+tc.tearDown()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Factory Pattern
+The factory pattern is a creational design pattern used in software development to encapsulate the processes involved in the creation of objects.
+
+class Person:
+def __init__(self):
+self.name = None
+self.gender = None
+def getName(self):
+return self.name
+def getGender(self):
+return self.gender
+class Male(Person):
+def __init__(self, name):
+print "Hello Mr." + name
+class Female(Person):
+def __init__(self, name):
+print "Hello Miss." + name
+class Factory:
+def getPerson(self, name, gender):
+if gender == 'M':
+return Male(name)
+if gender == 'F':
+return Female(name)
+if __name__ == '__main__':
+factory = Factory()
+person = factory.getPerson("Chetan", "M")
+
+Proxy Pattern
+A proxy, in its most general form, is a class functioning as an interface to something else. The proxy could interface to anything: a network connection, a large object in memory, a file, or some other resource that is expensive or impossible to duplicate. A well-known example of the proxy pattern is a reference counting pointer object.
+
+import time
+class Manager(object):
+def work(self):
+pass
+def talk(self):
+pass
+class SalesManager(Manager):
+def work(self):
+print "Sales Manager working..."
+def talk(self):
+print "Sales Manager ready to talk"
+class Proxy(Manager):
+def __init__(self):
+self.busy = 'No'
+self.sales = None
+def work (self):
+print "Proxy checking for Sales Manager availability"
+if self.busy == 'Yes':
+self.sales = SalesManager()
+time.sleep(2);
+self.sales.talk()
+else:
+time.sleep(2);
+print "Sales Manager is busy"
+if '__name__' == '__main__':
+p = Proxy()
+p.work()
+def talk(self):
+print "Sales Manager ready to talk"
+class Proxy(Manager):
+def __init__(self):
+self.busy = 'No'
+self.sales = None
+def work (self):
+print "Proxy checking for Sales Manager availability"
+if self.busy == 'Yes':
+self.sales = SalesManager()
+time.sleep(2);
+self.sales.talk()
+else:
+time.sleep(2);
+print "Sales Manager is busy"
+if '__name__' == '__main__':
+p = Proxy()
+p.work() 
