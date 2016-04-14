@@ -1,1 +1,191 @@
+como conseguir direccion ip.py
+@@ -0,0 +1,5 @@
+import socket
+ 
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
+s.connect(("gmail.com",80)) 
+print s.getsockname() 
+\ No newline at end of file
 
+
+Como probar si un puerto esta abierto desde Python.py
+@@ -0,0 +1,33 @@
+import socket
+import getopt
+import sys
+
+def check(ip, port):
+	gotod = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+	try:
+		gotod.settimeout(5)
+		gotod.connect((ip, int(port)))
+		gotod.shutdown(2)
+		gotod.close()
+		return True
+	except:
+		return False
+
+
+arguments = {}
+options, remainder = getopt.getopt(sys.argv[1:], 'h:p:')
+for opt, arg in options:
+	arguments[opt] = arg
+
+if ('-h' in arguments) and ('-p' in arguments):
+	status = False
+
+	status = check(arguments['-h'], arguments['-p'])
+
+	if status:
+		print 'Puerto abierto'
+	else:
+		print 'Puerto cerrado'
+else:
+	print 'Faltan parametros'
+\ No newline at end of file
+
+Conectarse a la base de datos  mysql.py
+@@ -0,0 +1,24 @@
+import MySQLdb
+ 
+DB_HOST = 'localhost' 
+DB_USER = 'root' 
+DB_PASS = 'mysqlroot' 
+DB_NAME = 'a' 
+ 
+def run_query(query=''): 
+    datos = [DB_HOST, DB_USER, DB_PASS, DB_NAME] 
+ 
+    conn = MySQLdb.connect(*datos) # Conectar a la base de datos 
+    cursor = conn.cursor()         # Crear un cursor 
+    cursor.execute(query)          # Ejecutar una consulta 
+ 
+    if query.upper().startswith('SELECT'): 
+        data = cursor.fetchall()   # Traer los resultados de un select 
+    else: 
+        conn.commit()              # Hacer efectiva la escritura de datos 
+        data = None 
+ 
+    cursor.close()                 # Cerrar el cursor 
+    conn.close()                   # Cerrar la conexi?n 
+ 
+    return data
+\ No newline at end of file
+
+Conectarse a la base de datos oracle.py
+@@ -0,0 +1,15 @@
+#Para poder conectarse a una base de datos Oracle se necesita instalar el modulo cs_Oracle
+import cx_Oracle
+connection = cx_Oracle.connect('scott/tiger@orcl')
+#Las acciones que se quieren realizar tendrian su lugar aqui
+connection.close()
+
+#Ejemplo
+import cx_Oracle
+conn_str='HR/HR@127.0.0.1:1521/XE'
+db_conn = cx_Oracle.connect(conn_str)
+cursor = db_conn.cursor()
+cursor.execute('SELECT * FROM countries')
+registros = cursor.fetchall()
+for r in registros:
+	print str(r)
+\ No newline at end of file
+
+Conectarse a la base de datos sql server.py
+@@ -0,0 +1,23 @@
+#La funci?n pymssql.connect se usa para conectarse a la base de datos SQL
+import pymssql
+conn = pymssql.connect(server='yourserver.database.windows.net', user='yourusername@yourserver', password='yourpassword', database='AdventureWorks')
+
+#La funci?n cursor.execute puede usarse para recuperar un conjunto de resultados de una consulta realizada a la base de datos SQL. Esta funci?n acepta cualquier consulta y devuelve un conjunto de resultados que se puede iterar mediante el uso de cursor.fetchone().
+import pymssql
+conn = pymssql.connect(server='yourserver.database.windows.net', user='yourusername@yourserver', password='yourpassword', database='AdventureWorks')
+cursor = conn.cursor()
+cursor.execute('SELECT c.CustomerID, c.CompanyName,COUNT(soh.SalesOrderID) AS OrderCount FROM SalesLT.Customer AS c LEFT OUTER JOIN SalesLT.SalesOrderHeader AS soh ON c.CustomerID = soh.CustomerID GROUP BY c.CustomerID, c.CompanyName ORDER BY OrderCount DESC;')
+row = cursor.fetchone()
+while row:
+    print str(row[0]) + " " + str(row[1]) + " " + str(row[2])   
+    row = cursor.fetchone()
+	
+#En la base de datos SQL, la propiedad IDENTITY y el objeto SEQUENCE pueden usarse para generar autom?ticamente los valores de clave principal.
+import pymssql
+conn = pymssql.connect(server='yourserver.database.windows.net', user='yourusername@yourserver', password='yourpassword', database='AdventureWorks')
+cursor = conn.cursor()
+cursor.execute("INSERT SalesLT.Product (Name, ProductNumber, StandardCost, ListPrice, SellStartDate) OUTPUT INSERTED.ProductID VALUES ('SQL Server Express', 'SQLEXPRESS', 0, 0, CURRENT_TIMESTAMP)")
+row = cursor.fetchone()
+while row:
+    print "Inserted Product ID : " +str(row[0])
+    row = cursor.fetchone()
+\ No newline at end of file
+
+Ejemplo DML en una base de datos Mysql.py
+@@ -0,0 +1,17 @@
+@@ -0,0 +1,16 @@
++#SELECT
++SELECT column_name,column_name FROM table_name;
++
++SELECT * FROM table_name;
++#EL asterisco significa que queremos todas las columnas de la tabla
++
++#WHERE
++SELECT column_name,column_name 
++FROM table_name 
++WHERE column_name operator value;
++
++#ORDER BY
++SELECT column_name,column_name
++FROM table_name
++ORDER BY column_name,column_name ASC|DESC;
++
+\ No newline at end of file
+
+Mostrar datos de un fichero por pantalla.py
+@@ -0,0 +1,46 @@
+#include <stdio.h> //escribe una cadena en un fichero y despu?s lo lee y escribe en pantalla
+ 
+ 
+struct registro{
+   char nombre[50];
+};
+ 
+ 
+int   main ()
+   {
+      FILE *fich;
+      char op;
+       
+      struct registro datos;
+      /* Escritura del float en el fichero */
+      if ((fich = fopen ("cadenas.dat", "wb")) == NULL)
+         {
+         printf ("Error de creaci?n del fichero\n");
+         
+         }
+       else{
+          do{
+           printf("Introduce una cadena: ");
+           scanf("%49s",datos.nombre);
+           fwrite (&datos, sizeof (datos), 1, fich);
+           printf("?Otra? (s/n)");
+           scanf("%1s",&op); 
+          }while((op == 's') || (op == 'S'));
+       }
+       fclose (fich);
+      /* Lectura del float del fichero */
+      if ((fich = fopen ("cadenas.dat", "rb")) == NULL)
+         {
+         printf ("Error de existencia del fichero\n");
+         
+         }
+      else{
+          fread (&datos, sizeof(datos), 1, fich);
+          while(!feof){
+             fread (&datos, sizeof(datos), 1, fich);
+          }
+      } 
+      fclose (fich);
+      
+      printf ("%s\n", datos.nombre);
+   }
+\ No newline at end of file
