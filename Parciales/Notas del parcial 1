@@ -1,0 +1,78 @@
+'''
+Video player
+============
+
+.. versionadded:: 1.2.0
+
+The video player widget can be used to play video and let the user control the
+play/pausing, volume and position. The widget cannot be customized much because
+of the complex assembly of numerous base widgets.
+
+.. image:: images/videoplayer.jpg
+    :align: center
+
+Annotations
+-----------
+
+If you want to display text at a specific time and for a certain duration,
+consider annotations. An annotation file has a ".jsa" extension. The player
+will automatically load the associated annotation file if it exists.
+
+An annotation file is JSON-based, providing a list of label dictionary items.
+The key and value must match one of the :class:`VideoPlayerAnnotation` items.
+For example, here is a short version of a jsa file that you can find in
+`examples/widgets/softboy.jsa`::
+
+
+    [
+        {"start": 0, "duration": 2,
+        "text": "This is an example of annotation"},
+        {"start": 2, "duration": 2,
+        "bgcolor": [0.5, 0.2, 0.4, 0.5],
+        "text": "You can change the background color"}
+    ]
+
+For our softboy.avi example, the result will be:
+
+.. image:: images/videoplayer-annotation.jpg
+    :align: center
+
+If you want to experiment with annotation files, test with::
+
+    python -m kivy.uix.videoplayer examples/widgets/softboy.avi
+
+Fullscreen
+----------
+
+The video player can play the video in fullscreen, if
+:attr:`VideoPlayer.allow_fullscreen` is activated by a double-tap on
+the video. By default, if the video is smaller than the Window, it will be not
+stretched.
+
+You can allow stretching by passing custom options to a
+:class:`VideoPlayer` instance::
+
+    player = VideoPlayer(source='myvideo.avi', state='play',
+        options={'allow_stretch': True})
+
+End-of-stream behavior
+----------------------
+
+You can specify what happens when the video has finished playing by passing an
+`eos` (end of stream) directive to the underlying
+:class:`~kivy.core.video.VideoBase` class. `eos` can be one of 'stop', 'pause'
+or 'loop' and defaults to 'stop'. For example, in order to loop the video::
+
+    player = VideoPlayer(source='myvideo.avi', state='play',
+        options={'eos': 'loop'})
+
+.. note::
+
+    The `eos` property of the VideoBase class is a string specifying the
+    end-of-stream behavior. This property differs from the `eos`
+    properties of the :class:`VideoPlayer` and
+    :class:`~kivy.uix.video.Video` classes, whose `eos`
+    property is simply a boolean indicating that the end of the file has
+    been reached.
+
+'''
